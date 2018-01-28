@@ -11,7 +11,7 @@
  * 空间复杂度 O(1) 
  */
 
-var selectSort = function(arr){
+var insertSort = function(arr){
     var n = arr.length;
     var l = n - 1;
     for(var i = 0; i < n; i++) {
@@ -31,4 +31,4 @@ var selectSort = function(arr){
 };
 
 var a = [ 1, 3, 4, 8, 9, 11, 24, 2, 5, 6, 8, 11, 23, 52, 118, 59];
-selectSort(a, 0, a.length - 1);
+insertSort(a, 0, a.length - 1);
