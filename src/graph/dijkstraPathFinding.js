@@ -1,13 +1,108 @@
 /**
- * 다이익스트라 알고리즘
+ * Dijkstra最短路径
  * 
- * 풀이과정
  * 
- * 1. 출발 노드를 지정하여 출발노드 자체의 거리비용을 0으로 초기화 하고 기타 노드의 거리비용은 무한대로 설정한다.
- * 2. 현재 노드의 인접노드들을 방문하고 노드와의 거리가 최단거리이면 거리비용을 수정하고 현재 방문한 경로를 경로리스트에 저장한다.
- * 3. 인접노드들의 방문이 완료 되면 현재 노드를 이미 방문한것으로 표기한다.
- * 4. 인접노들중 거리비용이 가장 작은것부터 정렬하여 방문큐에 저장한다.
- * 5. 방문큐에서 꺼내 2 ~ 4 의 작업을 반복한다.
- * 6. 모든 방문가능한 노드들을 방문 완료 후 목표노드의 거리비용이 있으면 경로가 존재하며 그 비용이 최단 거리.
- * 7. 경로 리스트에서 역추적하는 방식으로 최단경로 찾는다.
  */
+let keys = [];
+let open_arr = [];
+let closed = [];
+let sortes = {};
+let total = 0;
+let end_key = null;
+let now = null;
+let graph = null;
+
+let setStartNode = (key) => {
+    // console.log("start key => " + key);
+    let idx = keys.indexOf(key);
+    if( idx >= 0) {
+        for(let i = 0; i < keys.length; i++) {
+            if ( idx === i) {
+                open_arr.push(key);
+                sortes[key] = { p: null, path: 0};
+            } else {
+                sortes[keys[i]] = { p: null, path: -1};
+            }
+        }
+        // console.log("sortes => " + JSON.stringify(sortes));
+        // console.log("open_arr => " + JSON.stringify(open_arr));
+        // console.log("closed => " + JSON.stringify(closed));
+    } else {
+        console.log("해당 키가 없다.");
+        return;
+    }
+};
+
+let setEndNode = (key) => {
+    end_key = key;
+};
+
+let reverse_path = () => {
+    let sortest_path = [];
+    let key = end_key;
+    while(key) {
+        sortest_path.push(key);
+        key = sortes[key].p
+    }
+
+    sortest_path = sortest_path.reverse();
+    console.log(JSON.stringify(sortest_path));
+};
+let getPath = (start, end ) => {
+
+    open_arr = [];
+    closed = [];
+    total = 0;
+    sortes = {};
+    end_key = null;
+    now = null;
+
+    setStartNode(start);
+    setEndNode(end);
+
+    // console.log("map : " + JSON.stringify(graph));
+    // console.log("open_arr : " + JSON.stringify(open_arr));
+
+    while(open_arr.length > 0) {
+        now = open_arr.shift();
+        if(closed.indexOf(now) >= 0) continue;
+        let childKeys = Object.keys(graph[now]);
+        // console.log("keys => " + JSON.stringify(childKeys));
+        for(let i = 0; i < childKeys.length; i++){
+            let path = sortes[now].path + graph[now][childKeys[i]];
+            // console.log("chid : " + childKeys[i] + ", path" + path);
+            if(sortes[childKeys[i]].path === -1 || sortes[childKeys[i]].path > path){
+                sortes[childKeys[i]].p = now;
+                sortes[childKeys[i]].path = path
+            }
+            open_arr.push(childKeys[i]);
+        }
+        closed.push(now);
+    }
+
+    // console.log(JSON.stringify(sortes));
+    if(sortes[end_key].path >= 0) {
+        reverse_path();
+        console.log("最短距离为" + sortes[end_key].path);
+    }else{
+        console.log("没有最短距离");
+    }
+}
+
+let dijkstraSortestPath = (map) => {
+    keys = Object.keys(map);
+    // console.log(JSON.stringify(keys));
+    graph = map;
+};
+
+
+var map = {a:{b:3,c:1},b:{a:2,c:1},c:{a:4,b:1}};
+
+dijkstraSortestPath(map);
+
+getPath('a', 'b');      // => ['a', 'c', 'b']
+getPath('a', 'c');      // => ['a', 'c']
+getPath('b', 'a');      // => ['b', 'a']
+getPath('b', 'c', 'b'); // => ['b', 'c', 'b']
+getPath('c', 'a', 'b'); // => ['c', 'b', 'a', 'c', 'b']
+getPath('c', 'b', 'a'); // => ['c', 'b', 'a']
